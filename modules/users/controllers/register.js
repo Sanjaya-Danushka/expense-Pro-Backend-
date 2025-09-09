@@ -1,5 +1,6 @@
 const User = require("../../../models/users.model");
 const bcrypt = require('bcryptjs');
+const jwtManager = require("../../../manager/jwtmanager");
 
 const register = async (req, res) => {
     try {
@@ -23,13 +24,23 @@ const register = async (req, res) => {
             balance
         });
 
-        // Remove password from response
-        const userResponse = user.toObject();
-        delete userResponse.password;
+        // Create a clean user object for the response
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            balance: user.balance,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        };
+
+        // Generate JWT token
+        const token = jwtManager(userResponse);
 
         res.status(201).json({
             success: true,
             data: userResponse,
+            token,
             message: 'User registered successfully'
         });
 

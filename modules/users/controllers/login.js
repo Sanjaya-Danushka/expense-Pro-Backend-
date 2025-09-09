@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const jwtManager = require("../../../manager/jwtmanager");
 
 const login = async (req, res) => {
     try {
@@ -23,12 +23,19 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        // Remove password from the response
-        const userResponse = user.toObject();
-        delete userResponse.password;
+        // Create a clean user object for the response
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            balance: user.balance,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        };
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
+        // Generate JWT token
+        const token = jwtManager(userResponse);
+        
         return res.status(200).json({ 
             success: true,
             data: userResponse,
