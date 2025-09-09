@@ -11,6 +11,10 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
     services:
       mongodb:
         image: mongo:6.0
@@ -22,12 +26,12 @@ jobs:
           MONGO_INITDB_DATABASE: testdb
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
-    - name: Use Node.js
-      uses: actions/setup-node@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: ${{ matrix.node-version }}
         cache: 'npm'
     
     - name: Install dependencies
