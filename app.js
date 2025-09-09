@@ -12,6 +12,15 @@ const app = express();
 // Middleware
 app.use(express.json());
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes);
